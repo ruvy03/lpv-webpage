@@ -328,8 +328,6 @@ For example, in RMI, `Naming.bind("MyService", myServiceObject)` is the server b
 
 ---
 
----
-
 **Assignment 2: Develop any distributed application using CORBA to demonstrate object brokering. (Calculator or String operations).**
 
 ---
@@ -882,8 +880,6 @@ ORBD simplifies the setup of a Naming Service for Java CORBA applications, espec
 
 ---
 
----
-
 **Assignment 3: Develop a distributed system, to find sum of N elements in an array by distributing N/n elements to n number of processors MPI or OpenMP. Demonstrate by displaying the intermediate sums calculated at different processors.**
 
 ---
@@ -1281,13 +1277,13 @@ By following these steps, you can effectively leverage multiple cores on a singl
     - **For C++:**
       ```bash
       mpicxx my_program.cpp -o my_program_executable
-      # or sometimes mpicc for C++ if it's configured to detect and use the C++ compiler
+       or sometimes mpicc for C++ if it's configured to detect and use the C++ compiler
       ```
     - **For Fortran:**
       `bash
       mpif90 my_program.f90 -o my_program_executable
 
-    # or mpif77 for older Fortran
+    or mpif77 for older Fortran
 
     `  You can add standard compiler flags as needed (e.g.,`-O3`for optimization,`-g` for debugging).
 
@@ -3420,7 +3416,6 @@ Here are general guidelines for different scenarios:
 - **Compilation:**
   - Compile your Java source files using `javac`, ensuring JAX-RS API and implementation JARs are in the classpath.
   ```bash
-  # Example, assuming JAX-RS jars are in a 'lib' directory
   javac -cp ".:lib/*" com/example/MyRestResource.java
   ```
 - **Running (Typically requires a servlet container or application server):**

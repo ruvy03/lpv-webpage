@@ -453,47 +453,102 @@
           });
         }
 
-        // Generate table of contents from headings
+        // Modified table of contents generation to show assignment titles
         function generateTOC() {
-          const headings = document.querySelectorAll(
-            ".markdown-content h1, .markdown-content h2, .markdown-content h3"
-          );
           const tocList = document.getElementById("toc-list");
           tocList.innerHTML = "";
 
-          if (headings.length === 0) {
-            tocList.innerHTML = "<li>No headings found</li>";
-            return;
-          }
+          // Directly find all strong elements that contain assignment text
+          const assignmentElements = Array.from(
+            document.querySelectorAll(".markdown-content strong")
+          ).filter(
+            (el) =>
+              el.textContent.includes("Assignment") &&
+              el.textContent.includes(":")
+          );
 
-          headings.forEach((heading, index) => {
-            // Add id to the heading if it doesn't have one
-            if (!heading.id) {
-              heading.id = `heading-${index}`;
-            }
+          // If we found assignments, use them for the TOC
+          if (assignmentElements.length > 0) {
+            assignmentElements.forEach((element, index) => {
+              // Get the parent p tag or other container
+              const container = element.closest("p") || element.parentElement;
 
-            const listItem = document.createElement("li");
-            const link = document.createElement("a");
-            link.href = `#${heading.id}`;
-            link.textContent = heading.textContent;
-            link.style.paddingLeft = `${
-              (heading.tagName.charAt(1) - 1) * 15
-            }px`;
+              // Add id to the container if it doesn't have one
+              if (!container.id) {
+                container.id = `assignment-${index}`;
+              }
 
-            link.addEventListener("click", function (e) {
-              e.preventDefault();
-              document.querySelector(this.getAttribute("href")).scrollIntoView({
-                behavior: "smooth",
+              const listItem = document.createElement("li");
+              const link = document.createElement("a");
+              link.href = `#${container.id}`;
+
+              // Use the assignment text for the TOC
+              link.textContent = element.textContent;
+
+              link.addEventListener("click", function (e) {
+                e.preventDefault();
+                document
+                  .querySelector(this.getAttribute("href"))
+                  .scrollIntoView({
+                    behavior: "smooth",
+                  });
+
+                if (window.innerWidth <= 768) {
+                  document.querySelector(".sidebar").classList.remove("active");
+                }
               });
 
-              if (window.innerWidth <= 768) {
-                document.querySelector(".sidebar").classList.remove("active");
-              }
+              listItem.appendChild(link);
+              tocList.appendChild(listItem);
             });
 
-            listItem.appendChild(link);
-            tocList.appendChild(listItem);
-          });
+            console.log(
+              `Found ${assignmentElements.length} assignments for TOC`
+            );
+          } else {
+            // Fallback to regular headings if no assignments found
+            const headings = document.querySelectorAll(
+              ".markdown-content h1, .markdown-content h2, .markdown-content h3"
+            );
+
+            if (headings.length === 0) {
+              tocList.innerHTML = "<li>No headings found</li>";
+              return;
+            }
+
+            headings.forEach((heading, index) => {
+              // Add id to the heading if it doesn't have one
+              if (!heading.id) {
+                heading.id = `heading-${index}`;
+              }
+
+              const listItem = document.createElement("li");
+              const link = document.createElement("a");
+              link.href = `#${heading.id}`;
+              link.textContent = heading.textContent;
+              link.style.paddingLeft = `${
+                (heading.tagName.charAt(1) - 1) * 15
+              }px`;
+
+              link.addEventListener("click", function (e) {
+                e.preventDefault();
+                document
+                  .querySelector(this.getAttribute("href"))
+                  .scrollIntoView({
+                    behavior: "smooth",
+                  });
+
+                if (window.innerWidth <= 768) {
+                  document.querySelector(".sidebar").classList.remove("active");
+                }
+              });
+
+              listItem.appendChild(link);
+              tocList.appendChild(listItem);
+            });
+
+            console.log(`Fallback: Found ${headings.length} headings for TOC`);
+          }
         }
 
         // Theme toggle functionality
@@ -580,23 +635,41 @@
 
         // Scroll event for highlighting active TOC item
         window.addEventListener("scroll", function () {
-          const headings = document.querySelectorAll(
-            ".markdown-content h1, .markdown-content h2, .markdown-content h3"
-          );
-          const tocItems = document.querySelectorAll("#toc-list li");
+          const tocItems = document.querySelectorAll("#toc-list li a");
 
-          let currentActiveIndex = 0;
+          // Find the current closest section
+          let closestSection = null;
+          let closestDistance = Infinity;
 
-          headings.forEach((heading, index) => {
-            const rect = heading.getBoundingClientRect();
-            if (rect.top <= 150) {
-              currentActiveIndex = index;
+          tocItems.forEach((item) => {
+            const targetId = item.getAttribute("href").substring(1);
+            const target = document.getElementById(targetId);
+
+            if (target) {
+              const rect = target.getBoundingClientRect();
+              // Distance from the top of the viewport (with some threshold)
+              const distance = Math.abs(rect.top - 100);
+
+              if (distance < closestDistance) {
+                closestDistance = distance;
+                closestSection = targetId;
+              }
             }
           });
 
-          tocItems.forEach((item) => item.classList.remove("active"));
-          if (tocItems[currentActiveIndex]) {
-            tocItems[currentActiveIndex].classList.add("active");
+          // Remove active class from all items
+          tocItems.forEach((item) => {
+            item.parentElement.classList.remove("active");
+          });
+
+          // Add active class to the current item
+          if (closestSection) {
+            const activeItem = document.querySelector(
+              `a[href="#${closestSection}"]`
+            );
+            if (activeItem) {
+              activeItem.parentElement.classList.add("active");
+            }
           }
         });
       });
