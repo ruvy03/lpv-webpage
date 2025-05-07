@@ -1,0 +1,626 @@
+/* Custom scrollbar styling */
+:root {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--accent);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-secondary);
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: var(--bg-secondary);
+    border-radius: 4px;
+  }
+
+  .sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .sidebar::-webkit-scrollbar-thumb {
+    background-color: var(--accent);
+    border-radius: 4px;
+  }
+
+  .sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-secondary);
+  }
+
+  .sidebar::-webkit-scrollbar-track {
+    background-color: var(--bg-secondary);
+    border-radius: 4px;
+  }
+
+  /* Default Dark Theme Variables */
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --accent: #8e44ad; /* Purple */
+  --accent-secondary: #9b59b6; /* Lighter Purple */
+  --border: #2a2a2a;
+  --sidebar-width: 280px;
+  --taskbar-width: 240px;
+  --font-size: 16px;
+}
+
+html[data-theme="light"] {
+  --bg-primary: #fff7e0; /* Pastel Yellow/Cream */
+  --bg-secondary: #ffebcd; /* Blanched Almond - a light pastel orange/beige */
+  --text-primary: #5d4037; /* Darker warm brown for readability */
+  --text-secondary: #795548; /* Medium warm brown */
+  --accent: #ff8a65; /* Pastel Coral/Orange */
+  --accent-secondary: #ffab91; /* Lighter Pastel Coral/Orange */
+  --border: #d7ccc8; /* Light warm gray for borders */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  display: flex;
+  min-height: 100vh;
+  font-size: var(--font-size);
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  padding: 2rem 1rem;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  left: 0;
+  top: 0;
+  z-index: 1000; /* Increased z-index slightly */
+  transform: translateX(0); /* Default state */
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1.5rem;
+  padding-left: 0.5rem;
+}
+
+.logo svg {
+  margin-right: 10px;
+}
+
+.toc {
+  margin-top: 1.5rem;
+}
+
+.toc h3 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  padding-left: 0.5rem;
+}
+
+.toc ul {
+  list-style: none;
+}
+
+.toc li {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.toc li:hover {
+  background-color: rgba(
+    128,
+    128,
+    128,
+    0.1
+  ); /* Adjusted for theme neutrality */
+}
+html[data-theme="dark"] .toc li:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+html[data-theme="light"] .toc li:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.toc li.active {
+  background-color: rgba(
+    var(--accent-rgb, 142, 68, 173),
+    0.1
+  ); /* Use RGB for opacity */
+  border-left: 3px solid var(--accent);
+}
+
+.toc a {
+  color: var(--text-primary);
+  text-decoration: none;
+  display: block;
+  font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-height: 3em;
+}
+
+.content {
+  flex: 1;
+  padding: 3rem 2rem;
+  margin-left: var(--sidebar-width);
+  margin-right: var(--taskbar-width);
+  max-width: calc(100% - var(--sidebar-width) - var(--taskbar-width));
+  transition: margin-left 0.3s ease, margin-right 0.3s ease, max-width 0.3s ease,
+    padding 0.3s ease; /* Added transition for content */
+}
+
+.taskbar {
+  width: var(--taskbar-width);
+  background-color: var(--bg-secondary);
+  border-left: 1px solid var(--border);
+  padding: 2rem 1rem;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  right: 0;
+  top: 0;
+  z-index: 1000; /* Increased z-index slightly */
+  transform: translateX(0); /* Default state */
+}
+
+.taskbar.collapsed {
+  transform: translateX(calc(var(--taskbar-width) - 40px));
+}
+
+.task-toggle {
+  position: absolute;
+  top: 50%;
+  left: -20px; /* Position it to overlap the edge */
+  transform: translateY(-50%);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 101;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.task-group {
+  margin-bottom: 2rem;
+}
+
+.task-group h3 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.task-btn {
+  display: flex;
+  align-items: center;
+  /* background-color: rgba(255, 255, 255, 0.05); */
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  width: 100%;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+html[data-theme="dark"] .task-btn {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+html[data-theme="light"] .task-btn {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.task-btn:hover {
+  /* background-color: rgba(255, 255, 255, 0.1); */
+  filter: brightness(1.2);
+}
+html[data-theme="dark"] .task-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+html[data-theme="light"] .task-btn:hover {
+  background-color: rgba(0, 0, 0, 0.07);
+}
+
+.task-btn svg {
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.search-container {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  /* background-color: rgba(255, 255, 255, 0.05); */
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+html[data-theme="dark"] .search-input {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+html[data-theme="light"] .search-input {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+}
+
+.search-results {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+  display: none;
+}
+
+.search-result-item {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.search-result-item:hover {
+  /* background-color: rgba(255, 255, 255, 0.05); */
+  filter: brightness(1.1);
+}
+html[data-theme="dark"] .search-result-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+html[data-theme="light"] .search-result-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.highlight {
+  background-color: rgba(var(--accent-rgb, 142, 68, 173), 0.3);
+  border-radius: 2px;
+  padding: 0.1em 0.2em;
+}
+
+/* Markdown Styling */
+.markdown-content {
+  animation: fadeIn 0.5s ease;
+}
+
+.markdown-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.markdown-content h2 {
+  font-size: 1.8rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: var(--accent);
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.markdown-content h3 {
+  font-size: 1.4rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.markdown-content p {
+  margin-bottom: 1.2rem;
+}
+
+.markdown-content a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.markdown-content a:hover {
+  text-decoration: underline;
+}
+
+.markdown-content code {
+  /* background-color: rgba(255, 255, 255, 0.1); */
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.9em;
+}
+html[data-theme="dark"] .markdown-content code {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+html[data-theme="light"] .markdown-content code {
+  background-color: rgba(0, 0, 0, 0.07);
+  color: var(--text-primary);
+}
+
+.markdown-content pre {
+  background-color: var(--bg-secondary);
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+}
+
+.markdown-content pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid var(--accent);
+  padding-left: 1rem;
+  margin-left: 0;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: 1.5rem 0;
+}
+
+.markdown-content img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin: 1rem 0 1.5rem 2rem;
+}
+
+.markdown-content li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.markdown-content th,
+.markdown-content td {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+}
+
+.markdown-content th {
+  background-color: var(--bg-secondary);
+}
+
+.markdown-content hr {
+  border: none;
+  height: 1px;
+  background-color: var(--border);
+  margin: 2rem 0;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.loader-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(var(--accent-rgb, 142, 68, 173), 0.3);
+  border-radius: 50%;
+  border-top-color: var(--accent);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#exit-fullscreen-btn {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2147483647; /* Max z-index */
+  padding: 8px 12px;
+  background-color: var(--accent);
+  color: white; /* Default color, will be overridden by theme if needed */
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  font-size: 0.9rem;
+  align-items: center; /* For icon and text */
+  gap: 8px; /* Space between icon and text */
+}
+html[data-theme="dark"] #exit-fullscreen-btn {
+  color: #e0e0e0; /* Light text on dark accent */
+}
+html[data-theme="light"] #exit-fullscreen-btn {
+  color: #fff7e0; /* Dark text on light accent (or light text if accent is dark enough) */
+}
+#exit-fullscreen-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+  .taskbar {
+    transform: translateX(var(--taskbar-width)); /* Initially hide taskbar */
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1); /* Add shadow when it can be opened */
+  }
+
+  .taskbar.active {
+    /* taskbar.active class will be toggled by JS if we want this behavior */
+    transform: translateX(0);
+  }
+  .taskbar.collapsed {
+    /* Ensure collapsed state still works */
+    transform: translateX(calc(var(--taskbar-width) - 40px));
+  }
+  /* If taskbar starts hidden, we need JS to toggle an 'active' class or similar */
+  /* For now, keeping original behavior: it collapses, not hides completely */
+
+  .content {
+    margin-right: 40px; /* Space for the collapsed taskbar toggle */
+    max-width: calc(100% - var(--sidebar-width) - 40px);
+  }
+  .taskbar.collapsed ~ .content {
+    margin-right: 40px;
+    max-width: calc(100% - var(--sidebar-width) - 40px);
+  }
+  .taskbar:not(.collapsed) ~ .content {
+    margin-right: var(--taskbar-width);
+    max-width: calc(100% - var(--sidebar-width) - var(--taskbar-width));
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(calc(-1 * var(--sidebar-width))); /* Hide sidebar */
+    z-index: 1010; /* Ensure sidebar is above content when open */
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1); /* Add shadow when open */
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .content {
+    margin-left: 0;
+    width: 100%;
+    max-width: 100%;
+    padding: 2rem 1rem;
+    margin-right: 0; /* Taskbar will also be hidden or overlayed */
+  }
+  .taskbar.collapsed ~ .content {
+    /* Adjust for mobile if taskbar is also adapting */
+    margin-right: 0px;
+    max-width: 100%;
+  }
+  .taskbar:not(.collapsed) ~ .content {
+    margin-right: 0px;
+    max-width: 100%;
+  }
+
+  .menu-toggle {
+    display: flex; /* Show toggle button */
+    position: fixed;
+    top: 1.5rem;
+    left: 0;
+    z-index: 1020; /* Above open sidebar */
+    background-color: var(--accent);
+    color: white; /* Text color for better contrast on accent */
+    width: auto; /* Auto width based on padding */
+    padding: 10px 12px 10px 10px; /* Adjust padding */
+    height: 42px;
+    border-radius: 0 6px 6px 0; /* Rounded on the right side */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.2);
+    border: none;
+    transition: left 0.3s ease, background-color 0.3s ease;
+  }
+
+  .sidebar.active ~ .menu-toggle {
+    /* Example: move it with the sidebar or change appearance */
+    left: calc(
+      var(--sidebar-width) - 1px
+    ); /* Adjust to sit on the edge of open sidebar */
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-left: none;
+  }
+
+  .taskbar {
+    /* On mobile, taskbar could also transform out or become an overlay */
+    transform: translateX(
+      var(--taskbar-width)
+    ); /* Hide it by default on mobile */
+    z-index: 1005; /* Below sidebar but above content */
+  }
+  .taskbar.active {
+    /* If we add an 'active' class for mobile taskbar visibility */
+    transform: translateX(0);
+  }
+  .taskbar.collapsed {
+    /* When not fully hidden but collapsed */
+    transform: translateX(calc(var(--taskbar-width) - 40px));
+  }
+
+  /* If taskbar is active (open) on mobile, content might need padding */
+  .taskbar.active ~ .content {
+    /* margin-right: var(--taskbar-width); /* if it pushes content */
+    /* max-width: calc(100% - var(--taskbar-width)); */
+  }
+}
