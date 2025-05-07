@@ -1,3 +1,4 @@
+/* Updates to the sidebar and toggle buttons */
 :root {
   ::-webkit-scrollbar {
     width: 8px;
@@ -81,6 +82,7 @@ body {
   top: 0;
   z-index: 1000;
   transform: translateX(0);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
@@ -156,9 +158,13 @@ html[data-theme="light"] .toc li:hover {
     padding 0.3s ease;
   background-color: var(--bg-primary); /* Ensure content bg for fullscreen */
 }
+
 .content:fullscreen {
-  padding: 2rem; /* Adjust padding for fullscreen if needed */
+  padding: 2rem; /* Adjust padding for fullscreen */
   overflow-y: auto; /* Ensure scrollability in fullscreen */
+  margin-left: 0;
+  margin-right: 0;
+  max-width: 100%;
 }
 
 .taskbar {
@@ -173,6 +179,7 @@ html[data-theme="light"] .toc li:hover {
   top: 0;
   z-index: 1000;
   transform: translateX(0);
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .taskbar.collapsed {
@@ -195,7 +202,12 @@ html[data-theme="light"] .toc li:hover {
   justify-content: center;
   cursor: pointer;
   z-index: 101;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.taskbar.collapsed .task-toggle {
+  left: -38px;
+  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .task-group {
@@ -454,6 +466,7 @@ html[data-theme="light"] .markdown-content code {
   }
 }
 
+/* Fixed exit fullscreen button */
 #exit-fullscreen-btn {
   display: none;
   position: fixed;
@@ -469,16 +482,17 @@ html[data-theme="light"] .markdown-content code {
   font-size: 0.9rem;
   align-items: center;
   gap: 8px;
+  color: white;
 }
-html[data-theme="dark"] #exit-fullscreen-btn {
-  color: #e0e0e0;
-}
-html[data-theme="light"] #exit-fullscreen-btn {
-  color: #fff7e0;
-}
+
 #exit-fullscreen-btn svg {
   width: 18px;
   height: 18px;
+}
+
+/* Make sure fullscreen button is visible regardless of theme */
+.content:fullscreen #exit-fullscreen-btn {
+  display: flex;
 }
 
 @media (max-width: 1200px) {
@@ -514,6 +528,7 @@ html[data-theme="light"] #exit-fullscreen-btn {
     margin-right: 0;
   }
 
+  /* Improved menu toggle button */
   .menu-toggle {
     display: flex;
     position: fixed;
@@ -522,8 +537,7 @@ html[data-theme="light"] #exit-fullscreen-btn {
     z-index: 1020;
     background-color: var(--accent);
     color: white;
-    width: auto;
-    padding: 10px 12px 10px 10px;
+    width: 42px;
     height: 42px;
     border-radius: 0 6px 6px 0;
     align-items: center;
@@ -532,15 +546,17 @@ html[data-theme="light"] #exit-fullscreen-btn {
     box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.2);
     border: none;
     transition: left 0.3s ease, background-color 0.3s ease,
-      border-radius 0.3s ease;
+      border-radius 0.3s ease, box-shadow 0.3s ease;
   }
+
   .sidebar.active ~ .menu-toggle {
     left: calc(var(--sidebar-width) - 1px);
     background-color: var(--bg-secondary);
     color: var(--text-primary);
     border: 1px solid var(--border);
     border-left: none;
-    border-radius: 6px 0 0 6px;
+    box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 0 6px 6px 0;
   }
 
   .taskbar {
@@ -548,13 +564,16 @@ html[data-theme="light"] #exit-fullscreen-btn {
     z-index: 1005;
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
   }
+
   .taskbar.active {
     transform: translateX(0);
   }
+
   .taskbar .task-toggle {
     display: none;
   }
 
+  /* Improved taskbar mobile toggle */
   .taskbar-mobile-toggle {
     display: flex;
     position: fixed;
@@ -563,8 +582,7 @@ html[data-theme="light"] #exit-fullscreen-btn {
     z-index: 1020;
     background-color: var(--accent);
     color: white;
-    width: auto;
-    padding: 10px 10px 10px 12px;
+    width: 42px;
     height: 42px;
     border-radius: 6px 0 0 6px;
     align-items: center;
@@ -573,14 +591,22 @@ html[data-theme="light"] #exit-fullscreen-btn {
     box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.2);
     border: none;
     transition: right 0.3s ease, background-color 0.3s ease,
-      border-radius 0.3s ease;
+      border-radius 0.3s ease, box-shadow 0.3s ease;
   }
+
   .taskbar.active ~ .taskbar-mobile-toggle {
     right: calc(var(--taskbar-width) - 1px);
     background-color: var(--bg-secondary);
     color: var(--text-primary);
     border: 1px solid var(--border);
     border-right: none;
-    border-radius: 0 6px 6px 0;
+    box-shadow: -4px 0px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 6px 0 0 6px;
+  }
+
+  /* Ensure sidebar toggle buttons are visible in fullscreen mode */
+  .content:fullscreen .menu-toggle,
+  .content:fullscreen .taskbar-mobile-toggle {
+    display: flex;
   }
 }
