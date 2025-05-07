@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Configuration for marked
   marked.setOptions({
     highlight: function (code, lang) {
       const language = hljs.getLanguage(lang) ? lang : "plaintext";
@@ -10,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   const markdownContentElement = document.getElementById("markdown-content");
+  const mainContentArea = document.getElementById("main-content-area");
   const tocList = document.getElementById("toc-list");
   const searchInput = document.getElementById("search-input");
   const searchResults = document.getElementById("search-results");
@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const sidebar = document.querySelector(".sidebar");
   const taskToggle = document.getElementById("task-toggle");
   const taskbar = document.getElementById("taskbar");
+  const taskbarMobileToggle = document.getElementById("taskbar-mobile-toggle");
   const fontIncreaseBtn = document.getElementById("font-increase");
   const fontDecreaseBtn = document.getElementById("font-decrease");
   const fontResetBtn = document.getElementById("font-reset");
@@ -26,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const exitFullscreenBtn = document.getElementById("exit-fullscreen-btn");
   const highlightThemeLink = document.getElementById("highlight-theme");
 
-  // Fetch and render the Markdown file
   fetch("theory.md")
     .then((response) => {
       if (!response.ok) {
@@ -48,15 +48,12 @@ document.addEventListener("DOMContentLoaded", function () {
       tocList.innerHTML = "<li>Content failed to load</li>";
     });
 
-  // Render markdown content
   function renderMarkdown(markdownText) {
     markdownContentElement.innerHTML = marked.parse(markdownText);
-
     const firstH1 = markdownContentElement.querySelector("h1");
     if (firstH1) {
       document.title = `${firstH1.textContent} | LPV - Distributed Systems Lab`;
     }
-
     generateTOC();
     applySyntaxHighlighting();
   }
@@ -67,25 +64,21 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Generate table of contents
   function generateTOC() {
-    tocList.innerHTML = ""; // Clear loader or previous content
-
+    tocList.innerHTML = "";
     const assignmentElements = Array.from(
       markdownContentElement.querySelectorAll("strong")
     ).filter(
       (el) =>
         el.textContent.includes("Assignment") && el.textContent.includes(":")
     );
-
     let elementsForTOC = [];
-
     if (assignmentElements.length > 0) {
       elementsForTOC = assignmentElements.map((element, index) => {
         const container =
           element.closest("p, h1, h2, h3, h4, h5, h6") || element.parentElement;
         if (!container.id) container.id = `assignment-toc-${index}`;
-        return { element: container, text: element.textContent, level: 1 }; // Treat all as top level
+        return { element: container, text: element.textContent, level: 1 };
       });
     } else {
       const headings = markdownContentElement.querySelectorAll("h1, h2, h3");
@@ -102,19 +95,16 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       });
     }
-
     if (elementsForTOC.length === 0) {
       tocList.innerHTML = "<li>No content for ToC</li>";
       return;
     }
-
     elementsForTOC.forEach((item) => {
       const listItem = document.createElement("li");
       const link = document.createElement("a");
       link.href = `#${item.element.id}`;
       link.textContent = item.text;
       link.style.paddingLeft = `${(item.level - 1) * 15}px`;
-
       link.addEventListener("click", function (e) {
         e.preventDefault();
         const targetElement = document.querySelector(this.getAttribute("href"));
@@ -130,14 +120,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Theme toggle functionality
-  let isDarkMode = localStorage.getItem("theme") === "dark"; // Load preference or default to false (light)
+  let isDarkMode = localStorage.getItem("theme") === "dark";
   if (
     localStorage.getItem("theme") === null &&
     window.matchMedia &&
     window.matchMedia("(prefers-color-scheme: dark)").matches
   ) {
-    isDarkMode = true; // Prefer system dark mode if no preference set
+    isDarkMode = true;
   }
 
   function applyTheme() {
@@ -150,7 +139,6 @@ document.addEventListener("DOMContentLoaded", function () {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg> Toggle Light Mode`;
-
     if (isDarkMode) {
       document.documentElement.setAttribute("data-theme", "dark");
       btnToggleDarkMode.innerHTML = moonIcon;
@@ -159,7 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.documentElement.style.setProperty(
         "--accent-rgb",
         "142, 68, 173"
-      ); // For rgba uses
+      );
       localStorage.setItem("theme", "dark");
     } else {
       document.documentElement.setAttribute("data-theme", "light");
@@ -169,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.documentElement.style.setProperty(
         "--accent-rgb",
         "255, 138, 101"
-      ); // For rgba uses (Pastel Coral)
+      );
       localStorage.setItem("theme", "light");
     }
   }
@@ -178,49 +166,50 @@ document.addEventListener("DOMContentLoaded", function () {
     isDarkMode = !isDarkMode;
     applyTheme();
   }
-
   btnToggleDarkMode.addEventListener("click", toggleTheme);
-  applyTheme(); // Apply theme on initial load
+  applyTheme();
 
-  // Mobile menu toggle
-  function checkWindowSizeForMenu() {
+  function checkWindowSizeAndToggles() {
     if (window.innerWidth <= 768) {
       menuToggle.style.display = "flex";
+      taskbarMobileToggle.style.display = "flex";
+      if (taskToggle) taskToggle.style.display = "none";
     } else {
       menuToggle.style.display = "none";
-      sidebar.classList.remove("active"); // Close sidebar if window resized larger
+      taskbarMobileToggle.style.display = "none";
+      if (taskToggle) taskToggle.style.display = "flex";
+      sidebar.classList.remove("active");
+      taskbar.classList.remove("active");
     }
   }
-
   menuToggle.addEventListener("click", function () {
     sidebar.classList.toggle("active");
   });
+  taskbarMobileToggle.addEventListener("click", function () {
+    taskbar.classList.toggle("active");
+  });
 
-  // Taskbar toggle functionality
   taskToggle.addEventListener("click", function () {
     taskbar.classList.toggle("collapsed");
     const isCollapsed = taskbar.classList.contains("collapsed");
     taskToggle.innerHTML = isCollapsed
-      ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>` // Show icon to open
-      : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>`; // Show icon to collapse
+      ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>`
+      : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>`;
     taskToggle.title = isCollapsed ? "Open taskbar" : "Collapse taskbar";
   });
 
-  // Font size adjustment
   const defaultFontSize = 16;
   let currentFontSize =
     parseFloat(
       getComputedStyle(document.documentElement).getPropertyValue("--font-size")
     ) || defaultFontSize;
-
   function updateFontSize(size) {
-    currentFontSize = Math.max(12, Math.min(24, size)); // Clamp between 12px and 24px
+    currentFontSize = Math.max(12, Math.min(24, size));
     document.documentElement.style.setProperty(
       "--font-size",
       `${currentFontSize}px`
     );
   }
-
   fontIncreaseBtn.addEventListener("click", () =>
     updateFontSize(currentFontSize + 2)
   );
@@ -229,23 +218,19 @@ document.addEventListener("DOMContentLoaded", function () {
   );
   fontResetBtn.addEventListener("click", () => updateFontSize(defaultFontSize));
 
-  // Search functionality
   searchInput.addEventListener("input", function () {
     const query = this.value.trim().toLowerCase();
     clearHighlightsFromContent();
-
     if (query.length < 2) {
       searchResults.style.display = "none";
       return;
     }
-
     const textNodes = getAllTextNodes(markdownContentElement);
     const matches = findMatchesInTextNodes(textNodes, query);
-
     if (matches.length > 0) {
       displaySearchResults(matches, query);
       searchResults.style.display = "block";
-      highlightQueryInContent(query, textNodes); // Highlight in main content
+      highlightQueryInContent(query, textNodes);
     } else {
       searchResults.innerHTML =
         "<div class='search-result-item'>No results found</div>";
@@ -277,7 +262,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function findMatchesInTextNodes(textNodes, query) {
     const matches = [];
     const uniqueParentTexts = new Set();
-
     textNodes.forEach((node) => {
       const text = node.nodeValue.toLowerCase();
       if (text.includes(query)) {
@@ -295,7 +279,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     });
-    return matches.slice(0, 10); // Limit to 10 results
+    return matches.slice(0, 10);
   }
 
   function getClosestBlockElement(node) {
@@ -317,7 +301,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (blockElements.includes(current.nodeName)) return current;
       current = current.parentNode;
     }
-    return node.parentNode; // Fallback
+    return node.parentNode;
   }
 
   function displaySearchResults(matches, query) {
@@ -325,7 +309,6 @@ document.addEventListener("DOMContentLoaded", function () {
     matches.forEach((match) => {
       const item = document.createElement("div");
       item.className = "search-result-item";
-
       let snippet = match.text;
       const queryIndex = snippet.toLowerCase().indexOf(query);
       if (snippet.length > 100) {
@@ -336,20 +319,17 @@ document.addEventListener("DOMContentLoaded", function () {
           snippet.substring(start, end) +
           (end < snippet.length ? "..." : "");
       }
-
       item.innerHTML = snippet.replace(
         new RegExp(query, "gi"),
         (m) => `<span class="highlight">${m}</span>`
       );
-
       item.addEventListener("click", function () {
         if (match.element) {
           match.element.scrollIntoView({ behavior: "smooth", block: "center" });
-          // Highlighting in content is now done on input, but can be reinforced here if needed
         }
         searchResults.style.display = "none";
-        searchInput.value = ""; // Clear search input
-        clearHighlightsFromContent(); // Optionally clear highlights after click
+        searchInput.value = "";
+        clearHighlightsFromContent();
       });
       searchResults.appendChild(item);
     });
@@ -367,12 +347,11 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function highlightQueryInContent(query, textNodes) {
-    clearHighlightsFromContent(); // Clear previous highlights
+    clearHighlightsFromContent();
     const regex = new RegExp(
       `(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
       "gi"
     );
-
     textNodes.forEach((node) => {
       if (node.nodeValue.toLowerCase().includes(query)) {
         const parent = node.parentNode;
@@ -381,7 +360,6 @@ document.addEventListener("DOMContentLoaded", function () {
           parent.nodeName !== "SCRIPT" &&
           parent.nodeName !== "STYLE"
         ) {
-          // Avoid highlighting in scripts/styles
           const parts = node.nodeValue.split(regex);
           const fragment = document.createDocumentFragment();
           parts.forEach((part) => {
@@ -400,51 +378,51 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Print functionality
   btnPrint.addEventListener("click", () => window.print());
 
-  // Fullscreen functionality
-  function updateFullscreenButton() {
-    const isFs = !!document.fullscreenElement;
-    const enterIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg> Enter Fullscreen`;
-    const exitIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6m-6-6l7-7m7 7h-6V4m6 6l-7 7"></path></svg> Exit Fullscreen`;
+  function updateFullscreenButtonVisuals() {
+    const isFs = !!(
+      document.fullscreenElement &&
+      document.fullscreenElement.id === "main-content-area"
+    );
+    const enterIconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>`;
+    const exitIconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y1="14"></line></svg>`;
 
-    btnFullscreen.innerHTML = isFs ? exitIcon : enterIcon;
+    btnFullscreen.innerHTML = isFs
+      ? `${exitIconSVG} Exit Fullscreen`
+      : `${enterIconSVG} Enter Fullscreen`;
     btnFullscreen.title = isFs ? "Exit Fullscreen" : "Enter Fullscreen";
     exitFullscreenBtn.style.display = isFs ? "flex" : "none";
   }
 
   btnFullscreen.addEventListener("click", function () {
     if (!document.fullscreenElement) {
-      document.documentElement
-        .requestFullscreen()
-        .catch((err) =>
-          console.error(
-            `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
-          )
-        );
+      if (mainContentArea) {
+        mainContentArea
+          .requestFullscreen()
+          .catch((err) =>
+            console.error(
+              `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
+            )
+          );
+      }
     } else {
       if (document.exitFullscreen) document.exitFullscreen();
     }
   });
-
   exitFullscreenBtn.addEventListener("click", function () {
     if (document.exitFullscreen) document.exitFullscreen();
   });
+  document.addEventListener("fullscreenchange", updateFullscreenButtonVisuals);
+  updateFullscreenButtonVisuals();
 
-  document.addEventListener("fullscreenchange", updateFullscreenButton);
-  updateFullscreenButton(); // Initial state
+  window.addEventListener("resize", checkWindowSizeAndToggles);
+  checkWindowSizeAndToggles();
 
-  // Check window size on load and resize
-  window.addEventListener("resize", checkWindowSizeForMenu);
-  checkWindowSizeForMenu();
-
-  // Scroll event for highlighting active TOC item
   window.addEventListener("scroll", function () {
     const tocLinks = tocList.querySelectorAll("a");
     let currentActiveId = null;
-    const scrollPosition = window.scrollY + window.innerHeight / 3; // Consider items in the middle third of viewport
-
+    const scrollPosition = window.scrollY + window.innerHeight / 3;
     tocLinks.forEach((link) => {
       const sectionId = link.getAttribute("href").substring(1);
       const section = document.getElementById(sectionId);
@@ -455,12 +433,10 @@ document.addEventListener("DOMContentLoaded", function () {
         link.parentElement.classList.remove("active");
       }
     });
-
     if (currentActiveId) {
       const activeLink = tocList.querySelector(`a[href="#${currentActiveId}"]`);
       if (activeLink) activeLink.parentElement.classList.add("active");
     } else if (tocLinks.length > 0) {
-      // If no section is "current" (e.g., scrolled to top before first section), activate first
       const firstLink = tocLinks[0];
       const firstSection = document.getElementById(
         firstLink.getAttribute("href").substring(1)
@@ -475,11 +451,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Initial state for taskbar toggle if it starts collapsed on certain screen sizes
-  if (window.innerWidth <= 1200 && !taskbar.classList.contains("collapsed")) {
-    // Assuming it should start collapsed on <1200px if not already manually set
-    // taskbar.classList.add("collapsed"); // This line might be too aggressive, depends on exact desired default
-    // Update icon based on actual state:
+  if (
+    window.innerWidth > 768 &&
+    window.innerWidth <= 1200 &&
+    !taskbar.classList.contains("collapsed")
+  ) {
     const isCollapsed = taskbar.classList.contains("collapsed");
     taskToggle.innerHTML = isCollapsed
       ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>`

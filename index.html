@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <main class="content">
+    <main class="content" id="main-content-area">
       <div class="markdown-content" id="markdown-content">
         <div class="loader">
           <div class="loader-spinner"></div>
@@ -149,9 +149,7 @@
 
       <div class="task-group">
         <h3>Reading Tools</h3>
-        <button class="task-btn" id="btn-toggle-dark-mode">
-          <!-- SVG and text will be updated by JS -->
-        </button>
+        <button class="task-btn" id="btn-toggle-dark-mode"></button>
         <button class="task-btn" id="btn-print">
           <svg
             width="16"
@@ -171,9 +169,7 @@
           </svg>
           Print Content
         </button>
-        <button class="task-btn" id="btn-fullscreen">
-          <!-- SVG and text will be updated by JS -->
-        </button>
+        <button class="task-btn" id="btn-fullscreen"></button>
       </div>
     </div>
 
@@ -199,6 +195,34 @@
       </svg>
     </button>
 
+    <button
+      class="taskbar-mobile-toggle"
+      id="taskbar-mobile-toggle"
+      style="display: none"
+      title="Toggle Taskbar"
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="4" y1="21" x2="4" y2="14"></line>
+        <line x1="4" y1="10" x2="4" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12" y2="3"></line>
+        <line x1="20" y1="21" x2="20" y2="16"></line>
+        <line x1="20" y1="12" x2="20" y2="3"></line>
+        <line x1="1" y1="14" x2="7" y2="14"></line>
+        <line x1="9" y1="8" x2="15" y2="8"></line>
+        <line x1="17" y1="16" x2="23" y2="16"></line>
+      </svg>
+    </button>
+
     <button id="exit-fullscreen-btn" title="Exit Fullscreen">
       <svg
         width="20"
@@ -210,8 +234,10 @@
         stroke-linecap="round"
         stroke-linejoin="round"
       >
-        <path d="M4 14h6v6m-6-6l7-7m7 7h-6V4m6 6l-7 7"></path>
-        <!-- This is a 'minimize' or 'exit fullscreen' like icon -->
+        <polyline points="4 14 10 14 10 20"></polyline>
+        <polyline points="20 10 14 10 14 4"></polyline>
+        <line x1="14" y1="10" x2="21" y2="3"></line>
+        <line x1="3" y1="21" x2="10" y1="14"></line>
       </svg>
       Exit Fullscreen
     </button>

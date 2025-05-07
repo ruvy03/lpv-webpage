@@ -1,49 +1,39 @@
-/* Custom scrollbar styling */
 :root {
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
-
   ::-webkit-scrollbar-thumb {
     background-color: var(--accent);
     border-radius: 4px;
   }
-
   ::-webkit-scrollbar-thumb:hover {
     background-color: var(--accent-secondary);
   }
-
   ::-webkit-scrollbar-track {
     background-color: var(--bg-secondary);
     border-radius: 4px;
   }
-
   .sidebar::-webkit-scrollbar {
     width: 6px;
   }
-
   .sidebar::-webkit-scrollbar-thumb {
     background-color: var(--accent);
     border-radius: 4px;
   }
-
   .sidebar::-webkit-scrollbar-thumb:hover {
     background-color: var(--accent-secondary);
   }
-
   .sidebar::-webkit-scrollbar-track {
     background-color: var(--bg-secondary);
     border-radius: 4px;
   }
-
-  /* Default Dark Theme Variables */
   --bg-primary: #121212;
   --bg-secondary: #1e1e1e;
   --text-primary: #e0e0e0;
   --text-secondary: #a0a0a0;
-  --accent: #8e44ad; /* Purple */
-  --accent-secondary: #9b59b6; /* Lighter Purple */
+  --accent: #8e44ad;
+  --accent-secondary: #9b59b6;
   --border: #2a2a2a;
   --sidebar-width: 280px;
   --taskbar-width: 240px;
@@ -51,13 +41,13 @@
 }
 
 html[data-theme="light"] {
-  --bg-primary: #fff7e0; /* Pastel Yellow/Cream */
-  --bg-secondary: #ffebcd; /* Blanched Almond - a light pastel orange/beige */
-  --text-primary: #5d4037; /* Darker warm brown for readability */
-  --text-secondary: #795548; /* Medium warm brown */
-  --accent: #ff8a65; /* Pastel Coral/Orange */
-  --accent-secondary: #ffab91; /* Lighter Pastel Coral/Orange */
-  --border: #d7ccc8; /* Light warm gray for borders */
+  --bg-primary: #fff7e0;
+  --bg-secondary: #ffebcd;
+  --text-primary: #5d4037;
+  --text-secondary: #795548;
+  --accent: #ff8a65;
+  --accent-secondary: #ffab91;
+  --border: #d7ccc8;
 }
 
 * {
@@ -89,8 +79,8 @@ body {
   overflow-y: auto;
   left: 0;
   top: 0;
-  z-index: 1000; /* Increased z-index slightly */
-  transform: translateX(0); /* Default state */
+  z-index: 1000;
+  transform: translateX(0);
 }
 
 .logo {
@@ -131,14 +121,6 @@ body {
   cursor: pointer;
 }
 
-.toc li:hover {
-  background-color: rgba(
-    128,
-    128,
-    128,
-    0.1
-  ); /* Adjusted for theme neutrality */
-}
 html[data-theme="dark"] .toc li:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
@@ -147,10 +129,7 @@ html[data-theme="light"] .toc li:hover {
 }
 
 .toc li.active {
-  background-color: rgba(
-    var(--accent-rgb, 142, 68, 173),
-    0.1
-  ); /* Use RGB for opacity */
+  background-color: rgba(var(--accent-rgb, 142, 68, 173), 0.1);
   border-left: 3px solid var(--accent);
 }
 
@@ -174,7 +153,12 @@ html[data-theme="light"] .toc li:hover {
   margin-right: var(--taskbar-width);
   max-width: calc(100% - var(--sidebar-width) - var(--taskbar-width));
   transition: margin-left 0.3s ease, margin-right 0.3s ease, max-width 0.3s ease,
-    padding 0.3s ease; /* Added transition for content */
+    padding 0.3s ease;
+  background-color: var(--bg-primary); /* Ensure content bg for fullscreen */
+}
+.content:fullscreen {
+  padding: 2rem; /* Adjust padding for fullscreen if needed */
+  overflow-y: auto; /* Ensure scrollability in fullscreen */
 }
 
 .taskbar {
@@ -187,8 +171,8 @@ html[data-theme="light"] .toc li:hover {
   overflow-y: auto;
   right: 0;
   top: 0;
-  z-index: 1000; /* Increased z-index slightly */
-  transform: translateX(0); /* Default state */
+  z-index: 1000;
+  transform: translateX(0);
 }
 
 .taskbar.collapsed {
@@ -198,7 +182,7 @@ html[data-theme="light"] .toc li:hover {
 .task-toggle {
   position: absolute;
   top: 50%;
-  left: -20px; /* Position it to overlap the edge */
+  left: -20px;
   transform: translateY(-50%);
   background-color: var(--bg-secondary);
   border: 1px solid var(--border);
@@ -229,7 +213,6 @@ html[data-theme="light"] .toc li:hover {
 .task-btn {
   display: flex;
   align-items: center;
-  /* background-color: rgba(255, 255, 255, 0.05); */
   background-color: transparent;
   border: 1px solid var(--border);
   color: var(--text-primary);
@@ -249,10 +232,6 @@ html[data-theme="light"] .task-btn {
   background-color: rgba(0, 0, 0, 0.03);
 }
 
-.task-btn:hover {
-  /* background-color: rgba(255, 255, 255, 0.1); */
-  filter: brightness(1.2);
-}
 html[data-theme="dark"] .task-btn:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
@@ -275,7 +254,6 @@ html[data-theme="light"] .task-btn:hover {
   padding: 0.75rem 1rem 0.75rem 2.5rem;
   border-radius: 6px;
   border: 1px solid var(--border);
-  /* background-color: rgba(255, 255, 255, 0.05); */
   color: var(--text-primary);
   font-size: 0.9rem;
 }
@@ -310,10 +288,6 @@ html[data-theme="light"] .search-input {
   cursor: pointer;
 }
 
-.search-result-item:hover {
-  /* background-color: rgba(255, 255, 255, 0.05); */
-  filter: brightness(1.1);
-}
 html[data-theme="dark"] .search-result-item:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
@@ -331,7 +305,6 @@ html[data-theme="light"] .search-result-item:hover {
   padding: 0.1em 0.2em;
 }
 
-/* Markdown Styling */
 .markdown-content {
   animation: fadeIn 0.5s ease;
 }
@@ -374,7 +347,6 @@ html[data-theme="light"] .search-result-item:hover {
 }
 
 .markdown-content code {
-  /* background-color: rgba(255, 255, 255, 0.1); */
   padding: 0.2rem 0.4rem;
   border-radius: 3px;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
@@ -449,7 +421,6 @@ html[data-theme="light"] .markdown-content code {
   margin: 2rem 0;
 }
 
-/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -484,53 +455,35 @@ html[data-theme="light"] .markdown-content code {
 }
 
 #exit-fullscreen-btn {
-  display: none; /* Hidden by default */
+  display: none;
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 2147483647; /* Max z-index */
+  z-index: 2147483647;
   padding: 8px 12px;
   background-color: var(--accent);
-  color: white; /* Default color, will be overridden by theme if needed */
   border: none;
   border-radius: 6px;
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   font-size: 0.9rem;
-  align-items: center; /* For icon and text */
-  gap: 8px; /* Space between icon and text */
+  align-items: center;
+  gap: 8px;
 }
 html[data-theme="dark"] #exit-fullscreen-btn {
-  color: #e0e0e0; /* Light text on dark accent */
+  color: #e0e0e0;
 }
 html[data-theme="light"] #exit-fullscreen-btn {
-  color: #fff7e0; /* Dark text on light accent (or light text if accent is dark enough) */
+  color: #fff7e0;
 }
 #exit-fullscreen-btn svg {
   width: 18px;
   height: 18px;
 }
 
-/* Responsive styles */
 @media (max-width: 1200px) {
-  .taskbar {
-    transform: translateX(var(--taskbar-width)); /* Initially hide taskbar */
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1); /* Add shadow when it can be opened */
-  }
-
-  .taskbar.active {
-    /* taskbar.active class will be toggled by JS if we want this behavior */
-    transform: translateX(0);
-  }
-  .taskbar.collapsed {
-    /* Ensure collapsed state still works */
-    transform: translateX(calc(var(--taskbar-width) - 40px));
-  }
-  /* If taskbar starts hidden, we need JS to toggle an 'active' class or similar */
-  /* For now, keeping original behavior: it collapses, not hides completely */
-
   .content {
-    margin-right: 40px; /* Space for the collapsed taskbar toggle */
+    margin-right: 40px;
     max-width: calc(100% - var(--sidebar-width) - 40px);
   }
   .taskbar.collapsed ~ .content {
@@ -545,11 +498,10 @@ html[data-theme="light"] #exit-fullscreen-btn {
 
 @media (max-width: 768px) {
   .sidebar {
-    transform: translateX(calc(-1 * var(--sidebar-width))); /* Hide sidebar */
-    z-index: 1010; /* Ensure sidebar is above content when open */
-    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1); /* Add shadow when open */
+    transform: translateX(calc(-1 * var(--sidebar-width)));
+    z-index: 1010;
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
   }
-
   .sidebar.active {
     transform: translateX(0);
   }
@@ -559,68 +511,76 @@ html[data-theme="light"] #exit-fullscreen-btn {
     width: 100%;
     max-width: 100%;
     padding: 2rem 1rem;
-    margin-right: 0; /* Taskbar will also be hidden or overlayed */
-  }
-  .taskbar.collapsed ~ .content {
-    /* Adjust for mobile if taskbar is also adapting */
-    margin-right: 0px;
-    max-width: 100%;
-  }
-  .taskbar:not(.collapsed) ~ .content {
-    margin-right: 0px;
-    max-width: 100%;
+    margin-right: 0;
   }
 
   .menu-toggle {
-    display: flex; /* Show toggle button */
+    display: flex;
     position: fixed;
     top: 1.5rem;
     left: 0;
-    z-index: 1020; /* Above open sidebar */
+    z-index: 1020;
     background-color: var(--accent);
-    color: white; /* Text color for better contrast on accent */
-    width: auto; /* Auto width based on padding */
-    padding: 10px 12px 10px 10px; /* Adjust padding */
+    color: white;
+    width: auto;
+    padding: 10px 12px 10px 10px;
     height: 42px;
-    border-radius: 0 6px 6px 0; /* Rounded on the right side */
+    border-radius: 0 6px 6px 0;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.2);
     border: none;
-    transition: left 0.3s ease, background-color 0.3s ease;
+    transition: left 0.3s ease, background-color 0.3s ease,
+      border-radius 0.3s ease;
   }
-
   .sidebar.active ~ .menu-toggle {
-    /* Example: move it with the sidebar or change appearance */
-    left: calc(
-      var(--sidebar-width) - 1px
-    ); /* Adjust to sit on the edge of open sidebar */
+    left: calc(var(--sidebar-width) - 1px);
     background-color: var(--bg-secondary);
     color: var(--text-primary);
     border: 1px solid var(--border);
     border-left: none;
+    border-radius: 6px 0 0 6px;
   }
 
   .taskbar {
-    /* On mobile, taskbar could also transform out or become an overlay */
-    transform: translateX(
-      var(--taskbar-width)
-    ); /* Hide it by default on mobile */
-    z-index: 1005; /* Below sidebar but above content */
+    transform: translateX(100%);
+    z-index: 1005;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
   }
   .taskbar.active {
-    /* If we add an 'active' class for mobile taskbar visibility */
     transform: translateX(0);
   }
-  .taskbar.collapsed {
-    /* When not fully hidden but collapsed */
-    transform: translateX(calc(var(--taskbar-width) - 40px));
+  .taskbar .task-toggle {
+    display: none;
   }
 
-  /* If taskbar is active (open) on mobile, content might need padding */
-  .taskbar.active ~ .content {
-    /* margin-right: var(--taskbar-width); /* if it pushes content */
-    /* max-width: calc(100% - var(--taskbar-width)); */
+  .taskbar-mobile-toggle {
+    display: flex;
+    position: fixed;
+    top: calc(1.5rem + 42px + 10px);
+    right: 0;
+    z-index: 1020;
+    background-color: var(--accent);
+    color: white;
+    width: auto;
+    padding: 10px 10px 10px 12px;
+    height: 42px;
+    border-radius: 6px 0 0 6px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.2);
+    border: none;
+    transition: right 0.3s ease, background-color 0.3s ease,
+      border-radius 0.3s ease;
+  }
+  .taskbar.active ~ .taskbar-mobile-toggle {
+    right: calc(var(--taskbar-width) - 1px);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: 0 6px 6px 0;
   }
 }
