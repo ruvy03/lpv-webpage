@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Theory | Dark Mode Reader</title>
+    <title>LPV - Distributed Systems Lab</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <link
@@ -57,6 +57,8 @@
         --accent-secondary: #9b59b6;
         --border: #2a2a2a;
         --sidebar-width: 280px;
+        --taskbar-width: 240px;
+        --font-size: 16px;
       }
 
       * {
@@ -74,6 +76,7 @@
         line-height: 1.6;
         display: flex;
         min-height: 100vh;
+        font-size: var(--font-size);
       }
 
       .sidebar {
@@ -86,6 +89,7 @@
         overflow-y: auto;
         left: 0;
         top: 0;
+        z-index: 100;
       }
 
       .logo {
@@ -140,19 +144,150 @@
         text-decoration: none;
         display: block;
         font-size: 0.95rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        max-height: 3em;
       }
 
       .content {
         flex: 1;
         padding: 3rem 2rem;
         margin-left: var(--sidebar-width);
-        max-width: 900px;
+        margin-right: var(--taskbar-width);
+        max-width: calc(100% - var(--sidebar-width) - var(--taskbar-width));
+      }
+
+      .taskbar {
+        width: var(--taskbar-width);
+        background-color: var(--bg-secondary);
+        border-left: 1px solid var(--border);
+        padding: 2rem 1rem;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        right: 0;
+        top: 0;
+        z-index: 100;
+        transition: transform 0.3s ease;
+      }
+
+      .taskbar.collapsed {
+        transform: translateX(calc(var(--taskbar-width) - 40px));
+      }
+
+      .task-toggle {
+        position: absolute;
+        top: 50%;
+        left: -20px;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 101;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .task-group {
+        margin-bottom: 2rem;
+      }
+
+      .task-group h3 {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+      }
+
+      .task-btn {
+        display: flex;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        width: 100%;
+        margin-bottom: 0.75rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.2s ease;
+      }
+
+      .task-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .task-btn svg {
+        margin-right: 10px;
+        flex-shrink: 0;
+      }
+
+      .search-container {
+        position: relative;
+        margin-bottom: 1rem;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        font-size: 0.9rem;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+      }
+
+      .search-results {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        margin-top: 0.5rem;
+        max-height: 300px;
+        overflow-y: auto;
+        display: none;
+      }
+
+      .search-result-item {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+      }
+
+      .search-result-item:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .search-result-item:last-child {
+        border-bottom: none;
+      }
+
+      .highlight {
+        background-color: rgba(142, 68, 173, 0.3);
+        border-radius: 2px;
       }
 
       .theme-toggle {
         position: fixed;
         top: 1.5rem;
-        right: 1.5rem;
+        right: calc(var(--taskbar-width) + 1.5rem);
         background-color: var(--bg-secondary);
         border: 1px solid var(--border);
         color: var(--text-primary);
@@ -318,6 +453,25 @@
       }
 
       /* Responsive styles */
+      @media (max-width: 1200px) {
+        .taskbar {
+          transform: translateX(var(--taskbar-width));
+        }
+
+        .taskbar.active {
+          transform: translateX(0);
+        }
+
+        .content {
+          margin-right: 0;
+          max-width: calc(100% - var(--sidebar-width));
+        }
+
+        .theme-toggle {
+          right: 1.5rem;
+        }
+      }
+
       @media (max-width: 768px) {
         .sidebar {
           transform: translateX(-100%);
@@ -331,6 +485,7 @@
         .content {
           margin-left: 0;
           width: 100%;
+          max-width: 100%;
           padding: 2rem 1rem;
         }
 
@@ -371,7 +526,7 @@
           <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
           <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
         </svg>
-        Theory
+        LPV
       </div>
       <div class="toc">
         <h3>Table of Contents</h3>
@@ -391,6 +546,163 @@
         </div>
       </div>
     </main>
+
+    <div class="taskbar" id="taskbar">
+      <button class="task-toggle" id="task-toggle" title="Toggle taskbar">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="task-group">
+        <h3>Search</h3>
+        <div class="search-container">
+          <input
+            type="text"
+            class="search-input"
+            id="search-input"
+            placeholder="Search content..."
+          />
+          <div class="search-icon">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+        </div>
+        <div class="search-results" id="search-results"></div>
+      </div>
+
+      <div class="task-group">
+        <h3>Text Size</h3>
+        <button class="task-btn" id="font-increase">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="16"></line>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+          Increase Font Size
+        </button>
+        <button class="task-btn" id="font-decrease">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+          Decrease Font Size
+        </button>
+        <button class="task-btn" id="font-reset">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M8 12h8"></path>
+            <path d="M12 8v8"></path>
+          </svg>
+          Reset Font Size
+        </button>
+      </div>
+
+      <div class="task-group">
+        <h3>Reading Tools</h3>
+        <button class="task-btn" id="btn-toggle-dark-mode">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="5"></circle>
+            <path
+              d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"
+            ></path>
+          </svg>
+          Toggle Dark Mode
+        </button>
+        <button class="task-btn" id="btn-print">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path
+              d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+            ></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print Content
+        </button>
+        <button class="task-btn" id="btn-fullscreen">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"
+            ></path>
+          </svg>
+          Toggle Fullscreen
+        </button>
+      </div>
+    </div>
 
     <button
       class="theme-toggle"
@@ -478,7 +790,7 @@
           // Update page title if we can find an h1
           const firstH1 = contentElement.querySelector("h1");
           if (firstH1) {
-            document.title = `${firstH1.textContent} | Dark Mode Reader`;
+            document.title = `${firstH1.textContent} | LPV - Distributed Systems Lab`;
           }
 
           // Generate table of contents
@@ -592,7 +904,7 @@
         let isDarkMode = true;
         const themeToggle = document.getElementById("theme-toggle");
 
-        themeToggle.addEventListener("click", function () {
+        function toggleTheme() {
           isDarkMode = !isDarkMode;
           if (isDarkMode) {
             document.documentElement.style.setProperty(
@@ -611,7 +923,7 @@
               "--text-secondary",
               "#a0a0a0"
             );
-            this.innerHTML = `
+            themeToggle.innerHTML = `
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="5"></circle>
                             <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -625,29 +937,35 @@
                         </svg>
                     `;
           } else {
+            // Warmer light mode colors
             document.documentElement.style.setProperty(
               "--bg-primary",
-              "#ffffff"
+              "#fffaf0" // Warm white/ivory
             );
             document.documentElement.style.setProperty(
               "--bg-secondary",
-              "#f5f5f5"
+              "#f5f0e8" // Warm light beige
             );
             document.documentElement.style.setProperty(
               "--text-primary",
-              "#333333"
+              "#3c2f24" // Warm dark brown
             );
             document.documentElement.style.setProperty(
               "--text-secondary",
-              "#666666"
+              "#6d5c4d" // Medium warm brown
             );
-            this.innerHTML = `
+            themeToggle.innerHTML = `
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                         </svg>
                     `;
           }
-        });
+        }
+
+        themeToggle.addEventListener("click", toggleTheme);
+        document
+          .getElementById("btn-toggle-dark-mode")
+          .addEventListener("click", toggleTheme);
 
         // Mobile menu toggle
         const menuToggle = document.getElementById("menu-toggle");
@@ -665,6 +983,293 @@
         menuToggle.addEventListener("click", function () {
           sidebar.classList.toggle("active");
         });
+
+        // Taskbar toggle functionality
+        const taskToggle = document.getElementById("task-toggle");
+        const taskbar = document.getElementById("taskbar");
+
+        taskToggle.addEventListener("click", function () {
+          taskbar.classList.toggle("collapsed");
+
+          if (taskbar.classList.contains("collapsed")) {
+            taskToggle.innerHTML = `
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            `;
+          } else {
+            taskToggle.innerHTML = `
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            `;
+          }
+        });
+
+        // Font size adjustment
+        const fontIncrease = document.getElementById("font-increase");
+        const fontDecrease = document.getElementById("font-decrease");
+        const fontReset = document.getElementById("font-reset");
+        const defaultFontSize = 16;
+        let currentFontSize = defaultFontSize;
+
+        fontIncrease.addEventListener("click", function () {
+          if (currentFontSize < 24) {
+            currentFontSize += 2;
+            document.documentElement.style.setProperty(
+              "--font-size",
+              `${currentFontSize}px`
+            );
+          }
+        });
+
+        fontDecrease.addEventListener("click", function () {
+          if (currentFontSize > 12) {
+            currentFontSize -= 2;
+            document.documentElement.style.setProperty(
+              "--font-size",
+              `${currentFontSize}px`
+            );
+          }
+        });
+
+        fontReset.addEventListener("click", function () {
+          currentFontSize = defaultFontSize;
+          document.documentElement.style.setProperty(
+            "--font-size",
+            `${currentFontSize}px`
+          );
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById("search-input");
+        const searchResults = document.getElementById("search-results");
+
+        searchInput.addEventListener("input", function () {
+          const query = this.value.trim().toLowerCase();
+
+          if (query.length < 2) {
+            searchResults.style.display = "none";
+            clearHighlights();
+            return;
+          }
+
+          const content = document.getElementById("markdown-content");
+          const textNodes = getAllTextNodes(content);
+          const matches = findMatches(textNodes, query);
+
+          if (matches.length > 0) {
+            displaySearchResults(matches, query);
+            searchResults.style.display = "block";
+          } else {
+            searchResults.innerHTML =
+              "<div class='search-result-item'>No results found</div>";
+            searchResults.style.display = "block";
+            clearHighlights();
+          }
+        });
+
+        function getAllTextNodes(node) {
+          const textNodes = [];
+          const walker = document.createTreeWalker(
+            node,
+            NodeFilter.SHOW_TEXT,
+            null,
+            false
+          );
+
+          let currentNode;
+          while ((currentNode = walker.nextNode())) {
+            if (currentNode.nodeValue.trim() !== "") {
+              textNodes.push(currentNode);
+            }
+          }
+
+          return textNodes;
+        }
+
+        function findMatches(textNodes, query) {
+          const matches = [];
+
+          textNodes.forEach((node) => {
+            const text = node.nodeValue.toLowerCase();
+            if (text.includes(query)) {
+              const parent = getClosestBlock(node);
+              if (parent) {
+                matches.push({
+                  node: parent,
+                  text: parent.textContent,
+                });
+              }
+            }
+          });
+
+          return matches;
+        }
+
+        function getClosestBlock(node) {
+          let current = node.parentNode;
+          const blockElements = [
+            "P",
+            "DIV",
+            "H1",
+            "H2",
+            "H3",
+            "H4",
+            "H5",
+            "H6",
+            "LI",
+          ];
+
+          while (current && current !== document.body) {
+            if (blockElements.includes(current.nodeName)) {
+              return current;
+            }
+            current = current.parentNode;
+          }
+
+          return node.parentNode;
+        }
+
+        function displaySearchResults(matches, query) {
+          clearHighlights();
+          searchResults.innerHTML = "";
+
+          const uniqueMatches = [];
+          const seen = new Set();
+
+          matches.forEach((match) => {
+            const text = match.text.trim();
+            if (!seen.has(text)) {
+              seen.add(text);
+              uniqueMatches.push(match);
+            }
+          });
+
+          // Limit results to 10
+          const limitedMatches = uniqueMatches.slice(0, 10);
+
+          limitedMatches.forEach((match) => {
+            const item = document.createElement("div");
+            item.className = "search-result-item";
+
+            // Create snippet with context
+            let text = match.text.trim();
+            if (text.length > 100) {
+              const index = text.toLowerCase().indexOf(query);
+              const start = Math.max(0, index - 40);
+              const end = Math.min(text.length, index + query.length + 40);
+              text =
+                (start > 0 ? "..." : "") +
+                text.substring(start, end) +
+                (end < text.length ? "..." : "");
+            }
+
+            // Highlight query in snippet
+            const highlightedText = text.replace(
+              new RegExp(query, "gi"),
+              (match) => `<span class="highlight">${match}</span>`
+            );
+
+            item.innerHTML = highlightedText;
+
+            item.addEventListener("click", function () {
+              highlightInDocument(query);
+              match.node.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+              searchResults.style.display = "none";
+            });
+
+            searchResults.appendChild(item);
+          });
+        }
+
+        function clearHighlights() {
+          const highlights = document.querySelectorAll(".highlight-in-text");
+          highlights.forEach((el) => {
+            const parent = el.parentNode;
+            parent.replaceChild(document.createTextNode(el.textContent), el);
+            parent.normalize();
+          });
+        }
+
+        function highlightInDocument(query) {
+          clearHighlights();
+
+          const content = document.getElementById("markdown-content");
+          const textNodes = getAllTextNodes(content);
+
+          textNodes.forEach((node) => {
+            const text = node.nodeValue;
+            if (text.toLowerCase().includes(query.toLowerCase())) {
+              const regex = new RegExp(`(${query})`, "gi");
+              const fragment = document.createDocumentFragment();
+              let match;
+              let lastIndex = 0;
+
+              while ((match = regex.exec(text)) !== null) {
+                // Add text before match
+                if (match.index > lastIndex) {
+                  fragment.appendChild(
+                    document.createTextNode(
+                      text.substring(lastIndex, match.index)
+                    )
+                  );
+                }
+
+                // Add highlighted match
+                const span = document.createElement("span");
+                span.className = "highlight highlight-in-text";
+                span.textContent = match[0];
+                fragment.appendChild(span);
+
+                lastIndex = regex.lastIndex;
+              }
+
+              // Add remaining text
+              if (lastIndex < text.length) {
+                fragment.appendChild(
+                  document.createTextNode(text.substring(lastIndex))
+                );
+              }
+
+              node.parentNode.replaceChild(fragment, node);
+            }
+          });
+        }
+
+        // Print functionality
+        document
+          .getElementById("btn-print")
+          .addEventListener("click", function () {
+            window.print();
+          });
+
+        // Fullscreen functionality
+        document
+          .getElementById("btn-fullscreen")
+          .addEventListener("click", function () {
+            const content = document.querySelector(".content");
+            if (!document.fullscreenElement) {
+              if (content.requestFullscreen) {
+                content.requestFullscreen();
+              } else if (content.webkitRequestFullscreen) {
+                content.webkitRequestFullscreen();
+              } else if (content.msRequestFullscreen) {
+                content.msRequestFullscreen();
+              }
+            } else {
+              if (document.exitFullscreen) {
+                document.exitFullscreen();
+              } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+              } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+              }
+            }
+          });
 
         // Check window size on load and resize
         window.addEventListener("resize", checkWindowSize);
